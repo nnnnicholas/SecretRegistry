@@ -12,41 +12,41 @@ contract YourContract {
         return keccak256(abi.encode(_input));
     }
 
-    function commit(bytes32 _hash) public {
+    function commit(bytes32 _hash) external {
         emit Commit(msg.sender, _hash);
     }
 
-    function reveal(string calldata _input) public {
+    function reveal(string calldata _input) external {
         bytes32 _hash = getHash(_input);
         emit Reveal(msg.sender, _hash, _input);
     }
 }
 
 // Onchain Storage Maxi
-contract YourContract2 {
-    event Commit(address, bytes32);
-    event Reveal(address, bytes32, string);
+// contract YourContract2 {
+//     event Commit(address, bytes32);
+//     event Reveal(address, bytes32, string);
 
-    mapping(bytes32 => string) public secrets;
+//     mapping(bytes32 => string) public secrets;
 
-    function getHash(string memory _input) public pure returns (bytes32) {
-        return keccak256(abi.encode(_input));
-    }
+//     function getHash(string memory _input) public pure returns (bytes32) {
+//         return keccak256(abi.encode(_input));
+//     }
 
-    function commit(bytes32 _hash) public {
-        require(
-            keccak256(abi.encode(secrets[_hash])) == keccak256(""),
-            "Already revealed"
-        );
-        emit Commit(msg.sender, _hash);
-    }
+//     function commit(bytes32 _hash) public {
+//         require(
+//             keccak256(abi.encode(secrets[_hash])) == keccak256(""),
+//             "Already revealed"
+//         );
+//         emit Commit(msg.sender, _hash);
+//     }
 
-    function reveal(string calldata _truth) public {
-        bytes32 _hash = getHash(_truth);
-        require(getHash(secrets[_hash]) == getHash(""), "Already Revealed");
-        emit Reveal(msg.sender, _hash, _truth);
-    }
-}
+//     function reveal(string calldata _truth) public {
+//         bytes32 _hash = getHash(_truth);
+//         require(getHash(secrets[_hash]) == getHash(""), "Already Revealed");
+//         emit Reveal(msg.sender, _hash, _truth);
+//     }
+// }
 
 // Onchain Storage Maxi + Staking mechanism
 // contract YourContract3 {
