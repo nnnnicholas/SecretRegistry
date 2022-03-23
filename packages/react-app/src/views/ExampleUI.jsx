@@ -2,6 +2,7 @@ import { Button, Card, DatePicker, Divider, Input, Progress, Slider, Spin, Switc
 import React, { useState } from "react";
 import { utils } from "ethers";
 import { SyncOutlined } from "@ant-design/icons";
+import { useContractReader } from "eth-hooks";
 
 import { Address, Balance, Events } from "../components";
 
@@ -16,7 +17,11 @@ export default function ExampleUI({
   readContracts,
   writeContracts,
 }) {
-  const [newPurpose, setNewPurpose] = useState("loading...");
+  const [newCommit, setNewCommit] = useState();
+  // const [newReveal, setNewReveal] = useState();
+  const [newHash, setNewHash] = useState();
+  const commit = useContractReader(readContracts, "YourContract", "commit");
+  const secret = useContractReader(readContracts, "YourContract", "secret");
 
   return (
     <div>
@@ -29,36 +34,40 @@ export default function ExampleUI({
         <Divider />
         <div style={{ margin: 8 }}>
           <Input
-            onChange={e => {
-              setNewPurpose(e.target.value);
+            onChange={async e => {
+              setNewCommit(e.target.value);
+              let hash = await readContracts.YourContract.getHash(e.target.value);
+              console.log(hash);
+              setNewHash(hash);
             }}
           />
+          {newHash}
           <Button
             style={{ marginTop: 8 }}
             onClick={async () => {
               /* look how you call setPurpose on your contract: */
               /* notice how you pass a call back for tx updates too */
-              const result = tx(writeContracts.YourContract.setPurpose(newPurpose), update => {
-                console.log("📡 Transaction Update:", update);
-                if (update && (update.status === "confirmed" || update.status === 1)) {
-                  console.log(" 🍾 Transaction " + update.hash + " finished!");
-                  console.log(
-                    " ⛽️ " +
-                      update.gasUsed +
-                      "/" +
-                      (update.gasLimit || update.gas) +
-                      " @ " +
-                      parseFloat(update.gasPrice) / 1000000000 +
-                      " gwei",
-                  );
-                }
-              });
+              const result = tx(writeContracts.YourContract.setCommit(newHash), update => {});
               console.log("awaiting metamask/web3 confirm result...", result);
               console.log(await result);
             }}
           >
-            Set Purpose!
+            Commit hash to chain!
           </Button>
+          <Button
+            style={{ marginTop: 8 }}
+            onClick={async () => {
+              /* look how you call setPurpose on your contract: */
+              /* notice how you pass a call back for tx updates too */
+              const result = tx(writeContracts.YourContract.reveal(newCommit), update => {});
+              console.log("awaiting metamask/web3 confirm result...", result);
+              console.log(await result);
+            }}
+          >
+            Reveal secret
+          </Button>
+          <div>Onchain commit: {commit}</div>
+          <div>Secret: {secret}</div>
         </div>
         <Divider />
         Your Address:

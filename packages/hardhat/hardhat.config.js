@@ -12,6 +12,8 @@ require("hardhat-gas-reporter");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-etherscan");
 
+require("@primitivefi/hardhat-marmite");
+
 const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 
 /*
@@ -28,7 +30,7 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 const defaultNetwork = "localhost";
 
-const mainnetGwei = 21;
+const mainnetGwei = 27;
 
 function mnemonic() {
   try {
